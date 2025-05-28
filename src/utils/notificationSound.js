@@ -3,8 +3,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 // Create a context to manage notification sound globally
 const NotificationSoundContext = createContext();
 
-// Path to the notification sound file
-const NOTIFICATION_SOUND_PATH = '/sounds/notification.mp3';
+// Path to the notification sound file - using process.env.PUBLIC_URL ensures correct path in production
+const NOTIFICATION_SOUND_PATH = `${process.env.PUBLIC_URL}/sounds/notification.mp3`;
 
 // Provider component for managing notification sounds
 export const NotificationSoundProvider = ({ children }) => {
@@ -13,34 +13,54 @@ export const NotificationSoundProvider = ({ children }) => {
 
   // Initialize audio on component mount
   useEffect(() => {
-    const audioElement = new Audio(NOTIFICATION_SOUND_PATH);
-    setAudio(audioElement);
-    setInitialized(true);
-    
-    // Cleanup
-    return () => {
-      if (audioElement) {
-        audioElement.pause();
-        audioElement.src = '';
-      }
-    };
+    try {
+      const audioElement = new Audio(NOTIFICATION_SOUND_PATH);
+      
+      // Add error handling for the audio loading
+      audioElement.addEventListener('error', (e) => {
+        console.warn('Error loading notification sound:', e);
+        // Still mark as initialized even if sound fails to load
+        setInitialized(true);
+      });
+
+      audioElement.addEventListener('canplaythrough', () => {
+        setAudio(audioElement);
+        setInitialized(true);
+      });
+      
+      // Cleanup
+      return () => {
+        if (audioElement) {
+          audioElement.pause();
+          audioElement.src = '';
+        }
+      };
+    } catch (error) {
+      console.warn('Error initializing notification sound:', error);
+      // Mark as initialized even if there's an error
+      setInitialized(true);
+    }
   }, []);
 
   // Function to play notification sound
   const playNotificationSound = () => {
     if (audio) {
-      // Reset the audio to the beginning if it's already playing
-      audio.pause();
-      audio.currentTime = 0;
-      
-      // Play the notification sound
-      const playPromise = audio.play();
-      
-      // Handle promise rejection (browsers may block autoplay)
-      if (playPromise !== undefined) {
-        playPromise.catch((error) => {
-          console.error('Error playing notification sound:', error);
-        });
+      try {
+        // Reset the audio to the beginning if it's already playing
+        audio.pause();
+        audio.currentTime = 0;
+        
+        // Play the notification sound
+        const playPromise = audio.play();
+        
+        // Handle promise rejection (browsers may block autoplay)
+        if (playPromise !== undefined) {
+          playPromise.catch((error) => {
+            console.warn('Error playing notification sound:', error);
+          });
+        }
+      } catch (error) {
+        console.warn('Error playing notification sound:', error);
       }
     }
   };

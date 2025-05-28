@@ -47,6 +47,7 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Rating,
   Pagination
 } from "@mui/material";
 import {
@@ -59,7 +60,6 @@ import {
   Share as SpreadIcon,
   Group as AffiliateIcon,
   AccountBalance as WithdrawIcon,
-  // Chat as ConversationsIcon,
   Settings as SettingsIcon,
   AssignmentReturn as RefundIcon,
   Home as HomeIcon,
@@ -96,7 +96,6 @@ import {
   deleteDoc,
   onSnapshot
 } from "firebase/firestore";
-// import ChatWindow from "./Chat/ChatWindow";
 import { useNavigate } from "react-router-dom";
 import {
   EmailAuthProvider,
@@ -4122,6 +4121,21 @@ const SellerDashboard = ({ setIsSeller }) => {
             {isSettingsEditable ? "Cancel" : "Edit"}
           </Button>
         </Box>
+
+        {/* Seller Rating Section */}
+        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="subtitle1" component="legend">Your Rating:</Typography>
+          <Rating
+            value={sellerData?.rating || 0}
+            readOnly
+            precision={0.5}
+            sx={{ color: '#FF4D33' }}
+          />
+          <Typography variant="body2" color="text.secondary">
+            ({sellerData?.rating?.toFixed(1) || '0.0'})
+          </Typography>
+        </Box>
+
         <Box component="form" sx={{ mt: 2 }}>
           <Grid container spacing={2}>
             {/* Personal Information */}

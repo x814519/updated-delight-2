@@ -400,7 +400,7 @@ const Navbar = ({ isAdmin, setIsAdmin, isCustomer, setIsCustomer, isSeller, setI
                 display: 'block'
               }}
             >
-              DelightSphere Shopping Store
+              waifair Shopping Store
             </Typography>
           </Box>
 

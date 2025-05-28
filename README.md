@@ -68,3 +68,55 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+# Project Deployment Guide
+
+## Prerequisites
+- Node.js (v14 or higher)
+- npm (v6 or higher)
+
+## Local Development
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Start the development server:
+```bash
+npm start
+```
+
+## Production Build
+1. Create a production build:
+```bash
+npm run build
+```
+
+## Vercel Deployment Requirements
+
+### Sound Files
+Make sure to place your notification sound file in the correct location:
+1. Create a `sounds` directory in the `public` folder
+2. Add your `notification.mp3` file to `public/sounds/`
+
+### Environment Variables
+Ensure all required environment variables are set in your Vercel project settings.
+
+### Build Command
+The build command should be:
+```bash
+npm run build
+```
+
+### Output Directory
+The output directory should be set to:
+```
+build
+```
+
+## Troubleshooting
+If you encounter build issues:
+1. Ensure all dependencies are properly installed
+2. Check that all required files are in the correct locations
+3. Verify that environment variables are properly set in Vercel
+4. Make sure the notification sound file exists in the public/sounds directory

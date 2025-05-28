@@ -22,7 +22,7 @@ import {
 import { cloudinary } from '../../utils/cloudinaryConfig';
 import { initializeChatCleanupWorker } from '../../utils/chatCleanup';
 import { useNavigate } from 'react-router-dom';
-import { useNotificationSound } from '../../utils/notificationSound';
+import { useNotificationSound } from '../../utils';
 
 // Add a flag to track if Cloudinary is properly configured
 let isCloudinaryConfigured = false;

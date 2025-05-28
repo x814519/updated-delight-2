@@ -11,7 +11,7 @@ import {
   DialogContent, DialogContentText, DialogTitle, FormControl, InputLabel, Select,
   OutlinedInput, Chip, Modal, Backdrop, Fade, FormControlLabel, Switch, ListItemButton, 
   Step, StepLabel, Stepper, Collapse, LinearProgress, FormGroup, Checkbox,
-  CardHeader, CardActions, Stack, Link, Fab
+  CardHeader, CardActions, Stack, Link, Fab, Rating
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -3759,6 +3759,7 @@ const AdminDashboard = () => {
               <TableCell>Registration Date</TableCell>
               <TableCell>Wallet Balance</TableCell>
               <TableCell>Seller Country</TableCell>
+              <TableCell>Rating</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -3773,6 +3774,14 @@ const AdminDashboard = () => {
                 <TableCell>{seller.createdAt ? formatDate(seller.createdAt) : 'N/A'}</TableCell>
                 <TableCell>${(seller.walletBalance || 0).toFixed(2)}</TableCell>
                 <TableCell>{seller.country || 'N/A'}</TableCell>
+                <TableCell>
+                  <Rating
+                    value={seller.rating || 0}
+                    readOnly
+                    size="small"
+                    precision={1}
+                  />
+                </TableCell>
                 <TableCell>
                   <Chip 
                     label={seller.status || 'pending'} 
@@ -5188,10 +5197,6 @@ const AdminDashboard = () => {
       // Get form elements using the ref
       const form = formRef.current;
       
-      // Debug form structure
-      console.log('Form structure:', form);
-      console.log('Form elements:', form.elements);
-      
       // Get values directly from form elements
       const nameInput = form.querySelector('input[name="name"]');
       const phoneInput = form.querySelector('input[name="phone"]');
@@ -5200,9 +5205,7 @@ const AdminDashboard = () => {
       const addressInput = form.querySelector('textarea[name="address"]');
       const passwordInput = form.querySelector('input[name="password"]');
       const countryInput = form.querySelector('input[name="country"]');
-      
-      console.log('Password input found:', passwordInput);
-      console.log('Password value:', passwordInput?.value);
+      const ratingInput = form.querySelector('input[name="rating"]');
       
       const updatedData = {
         name: nameInput?.value || selectedSeller.name,
@@ -5211,6 +5214,7 @@ const AdminDashboard = () => {
         status: statusSelect?.value || selectedSeller.status,
         address: addressInput?.value || selectedSeller.address,
         country: countryInput?.value || selectedSeller.country,
+        rating: selectedSeller.rating || 0,
         updatedAt: serverTimestamp()
       };
 
@@ -5257,8 +5261,8 @@ const AdminDashboard = () => {
         }
       }
 
-      console.log('Updating seller with data:', updatedData); // Debug log
-      console.log('Seller ID:', selectedSeller.id); // Debug log
+      console.log('Updating seller with data:', updatedData);
+      console.log('Seller ID:', selectedSeller.id);
       
       const sellerRef = doc(db, 'sellers', selectedSeller.id);
       await updateDoc(sellerRef, updatedData);
@@ -6496,6 +6500,22 @@ const AdminDashboard = () => {
                       <MenuItem value="Suspended">Suspended</MenuItem>
                     </Select>
                   </FormControl>
+                  <Box sx={{ mt: 2 }}>
+                    <Typography component="legend">Seller Rating</Typography>
+                    <Rating
+                      name="rating"
+                      value={Number(selectedSeller.rating) || 0}
+                      precision={1}
+                      max={5}
+                      size="large"
+                      onChange={(event, newValue) => {
+                        setSelectedSeller(prev => ({
+                          ...prev,
+                          rating: newValue
+                        }));
+                      }}
+                    />
+                  </Box>
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
