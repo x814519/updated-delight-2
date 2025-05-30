@@ -452,6 +452,7 @@ const SellerDashboard = ({ setIsSeller }) => {
   const [newOrdersThisMonth, setNewOrdersThisMonth] = useState(0);
   const [cancelledOrdersThisMonth, setCancelledOrdersThisMonth] = useState(0);
   const [onTheWayOrdersThisMonth, setOnTheWayOrdersThisMonth] = useState(0);
+  const [completedOrdersThisMonth, setCompletedOrdersThisMonth] = useState(0);
 
   // Add new effect to fetch admin products when dialog opens
   useEffect(() => {
@@ -983,6 +984,7 @@ const SellerDashboard = ({ setIsSeller }) => {
       let newOrdersCount = 0;
       let cancelledOrdersCount = 0;
       let onTheWayOrdersCount = 0;
+      let completedOrdersCount = 0;
       
       // Get current month and year
       const now = new Date();
@@ -1023,6 +1025,11 @@ const SellerDashboard = ({ setIsSeller }) => {
         if (isCurrentMonth && orderData.status === "on-the-way") {
           onTheWayOrdersCount++;
         }
+
+        // Check if order is from current month and is completed
+        if (isCurrentMonth && orderData.status === "completed") {
+          completedOrdersCount++;
+        }
         
         // Count all order totals for completed or processing orders
         if (orderData.status === "completed" || orderData.status === "processing" || orderData.status === "picked") {
@@ -1040,6 +1047,8 @@ const SellerDashboard = ({ setIsSeller }) => {
       setCancelledOrdersThisMonth(cancelledOrdersCount);
       // Update on the way orders count for this month
       setOnTheWayOrdersThisMonth(onTheWayOrdersCount);
+      // Update completed orders count for this month
+      setCompletedOrdersThisMonth(completedOrdersCount);
 
       // Update unpicked orders count
       setUnpickedOrdersCount(unpickedCount);
@@ -1774,7 +1783,7 @@ const SellerDashboard = ({ setIsSeller }) => {
                         Completed
                       </Typography>
                       <Typography variant="h5" color="primary">
-                        0
+                        {completedOrdersThisMonth}
                       </Typography>
                     </Box>
                   </Box>
