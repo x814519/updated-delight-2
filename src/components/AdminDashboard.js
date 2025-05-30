@@ -5512,8 +5512,8 @@ const AdminDashboard = () => {
         severity: 'success'
       });
       
-      // Navigate to orders tab to see the new orders
-      handleTabChange('orders');
+      // Refresh the sellers products data instead of changing tabs
+      fetchSellersWithProducts(true);
       
     } catch (error) {
       console.error('Error creating orders:', error);
