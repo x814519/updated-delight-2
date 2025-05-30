@@ -115,7 +115,10 @@ const ChatInput = ({ onSendMessage, currentUserUid, isAdmin, selectedChatId, dis
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if ((message.trim() === '' && !image) || sending) return;
+    // Trim the message to remove extra whitespace and empty lines from both ends
+    const trimmedMessage = message.replace(/^\s+|\s+$/g, '');
+    
+    if ((trimmedMessage === '' && !image) || sending) return;
     
     setSending(true);
     setUploadProgress(0);
@@ -139,8 +142,8 @@ const ChatInput = ({ onSendMessage, currentUserUid, isAdmin, selectedChatId, dis
         }
       }
       
-      // Call the parent component's onSendMessage function
-      onSendMessage(message, imageUrl);
+      // Call the parent component's onSendMessage function with trimmed message
+      onSendMessage(trimmedMessage, imageUrl);
       
       // Clear input fields
       setMessage('');
