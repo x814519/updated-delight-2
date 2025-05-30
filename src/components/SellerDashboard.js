@@ -449,6 +449,9 @@ const SellerDashboard = ({ setIsSeller }) => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const { playNotificationSound } = useNotificationSound();
+  const [newOrdersThisMonth, setNewOrdersThisMonth] = useState(0);
+  const [cancelledOrdersThisMonth, setCancelledOrdersThisMonth] = useState(0);
+  const [onTheWayOrdersThisMonth, setOnTheWayOrdersThisMonth] = useState(0);
 
   // Add new effect to fetch admin products when dialog opens
   useEffect(() => {
@@ -975,8 +978,16 @@ const SellerDashboard = ({ setIsSeller }) => {
       const ordersSnapshot = await getDocs(ordersQuery);
       const ordersData = [];
       let unpickedCount = 0;
-      let totalSales = 0;  // Initialize total sales counter
+      let totalSales = 0;
       let pendingOrders = 0;
+      let newOrdersCount = 0;
+      let cancelledOrdersCount = 0;
+      let onTheWayOrdersCount = 0;
+      
+      // Get current month and year
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
       
       ordersSnapshot.forEach((doc) => {
         const orderData = doc.data();
@@ -993,6 +1004,26 @@ const SellerDashboard = ({ setIsSeller }) => {
           pendingOrders++;
         }
         
+        // Get order date
+        const orderDate = orderData.createdAt?.toDate?.() || new Date(orderData.createdAt || 0);
+        const isCurrentMonth = orderDate.getMonth() === currentMonth && 
+                             orderDate.getFullYear() === currentYear;
+        
+        // Check if order is from current month and is new/pending
+        if (isCurrentMonth && orderData.status === "pending") {
+          newOrdersCount++;
+        }
+        
+        // Check if order is from current month and is cancelled
+        if (isCurrentMonth && orderData.status === "cancelled") {
+          cancelledOrdersCount++;
+        }
+
+        // Check if order is from current month and is on the way
+        if (isCurrentMonth && orderData.status === "on-the-way") {
+          onTheWayOrdersCount++;
+        }
+        
         // Count all order totals for completed or processing orders
         if (orderData.status === "completed" || orderData.status === "processing" || orderData.status === "picked") {
           if (orderData.total) {
@@ -1002,6 +1033,13 @@ const SellerDashboard = ({ setIsSeller }) => {
           }
         }
       });
+
+      // Update new orders count for this month
+      setNewOrdersThisMonth(newOrdersCount);
+      // Update cancelled orders count for this month
+      setCancelledOrdersThisMonth(cancelledOrdersCount);
+      // Update on the way orders count for this month
+      setOnTheWayOrdersThisMonth(onTheWayOrdersCount);
 
       // Update unpicked orders count
       setUnpickedOrdersCount(unpickedCount);
@@ -1697,7 +1735,7 @@ const SellerDashboard = ({ setIsSeller }) => {
                         New Order
                       </Typography>
                       <Typography variant="h5" color="primary">
-                        2
+                        {newOrdersThisMonth}
                       </Typography>
                     </Box>
                   </Box>
@@ -1710,7 +1748,7 @@ const SellerDashboard = ({ setIsSeller }) => {
                         Cancelled
                       </Typography>
                       <Typography variant="h5" color="primary">
-                        0
+                        {cancelledOrdersThisMonth}
                       </Typography>
                     </Box>
                   </Box>
@@ -1720,10 +1758,10 @@ const SellerDashboard = ({ setIsSeller }) => {
                     </Avatar>
                     <Box>
                       <Typography variant="body2" color="text.secondary">
-                        On delivery
+                        On the way
                       </Typography>
                       <Typography variant="h5" color="primary">
-                        0
+                        {onTheWayOrdersThisMonth}
                       </Typography>
                     </Box>
                   </Box>
@@ -1733,7 +1771,7 @@ const SellerDashboard = ({ setIsSeller }) => {
                     </Avatar>
                     <Box>
                       <Typography variant="body2" color="text.secondary">
-                        Delivered
+                        Completed
                       </Typography>
                       <Typography variant="h5" color="primary">
                         0
