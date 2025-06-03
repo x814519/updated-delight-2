@@ -4648,6 +4648,8 @@ const AdminDashboard = () => {
           id: doc.id,
           ...doc.data()
         }));
+        // Sort sellers by email in ascending order
+        sellersList.sort((a, b) => a.email.localeCompare(b.email));
         setSellers(sellersList);
       } catch (error) {
         console.error('Error fetching sellers:', error);
@@ -4742,7 +4744,8 @@ const AdminDashboard = () => {
             >
               {sellers.map(seller => (
                 <MenuItem key={seller.id} value={seller.id}>
-                  {seller.name || 'Unnamed'} - {seller.email} (Current Balance: ${seller.walletBalance ? seller.walletBalance.toFixed(2) : '0.00'})
+                  {/* {seller.name || 'Unnamed'} -  */}
+                  {seller.email} (Current Balance: ${seller.walletBalance ? seller.walletBalance.toFixed(2) : '0.00'})
                 </MenuItem>
               ))}
             </Select>
