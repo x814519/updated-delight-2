@@ -20,7 +20,6 @@ import {
   writeBatch
 } from 'firebase/firestore';
 import { cloudinary } from '../../utils/cloudinaryConfig';
-import { initializeChatCleanupWorker } from '../../utils/chatCleanup';
 import { useNavigate } from 'react-router-dom';
 import { useNotificationSound } from '../../utils';
 
@@ -110,17 +109,6 @@ const Chat = ({ isAdmin, onMessageSent }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
   const { playNotificationSound } = useNotificationSound();
-  
-  // Initialize the chat cleanup worker once when the component mounts
-  useEffect(() => {
-    // Only initialize the worker once, preferably if the user is an admin or seller
-    if (currentUserUid) {
-      console.log('Initializing chat cleanup worker for 60-hour message retention policy');
-      initializeChatCleanupWorker();
-    }
-    
-    // No cleanup needed for this effect as the worker will stop when the app is closed
-  }, [currentUserUid]);
   
   // Get current user's UID and details
   useEffect(() => {
