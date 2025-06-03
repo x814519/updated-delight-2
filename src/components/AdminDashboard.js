@@ -3839,7 +3839,7 @@ const AdminDashboard = () => {
       sellerWithProducts
         .filter(product => product.seller && product.seller.email)
         .map(product => product.seller.email)
-    )].sort();
+    )].sort((a, b) => a.localeCompare(b)); // Sort emails alphabetically in ascending order
     
     // Filter products based on selected seller email or search term
     const filteredProducts = sellerWithProducts.filter(product => {
