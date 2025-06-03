@@ -11,17 +11,18 @@ import {
 } from 'firebase/firestore';
 
 /**
- * Deletes seller chat messages that are older than 60 hours
- * This function can be called periodically to clean up old messages
+ * Manual cleanup function for admin to delete old chat messages
+ * This function should only be called by admin when needed
+ * @param {number} hours - Number of hours to keep messages for (e.g., 168 for 7 days)
  */
-export const cleanupOldChatMessages = async () => {
+export const manualCleanupOldChatMessages = async (hours = 168) => {
   try {
-    console.log('Starting seller chat messages cleanup...');
+    console.log(`Starting manual cleanup of chat messages older than ${hours} hours...`);
     
-    // Calculate timestamp for 60 hours ago
-    const sixtyHoursAgo = new Date();
-    sixtyHoursAgo.setHours(sixtyHoursAgo.getHours() - 60);
-    const cutoffTimestamp = Timestamp.fromDate(sixtyHoursAgo);
+    // Calculate timestamp for X hours ago
+    const cutoffDate = new Date();
+    cutoffDate.setHours(cutoffDate.getHours() - hours);
+    const cutoffTimestamp = Timestamp.fromDate(cutoffDate);
     
     // Get all chats
     const chatsRef = collection(db, 'chats');
@@ -34,7 +35,7 @@ export const cleanupOldChatMessages = async () => {
       const chatId = chatDoc.id;
       const messagesRef = collection(db, 'chats', chatId, 'messages');
       
-      // Query for messages older than 60 hours
+      // Query for messages older than specified hours
       const oldMessagesQuery = query(
         messagesRef,
         where('timestamp', '<', cutoffTimestamp)
@@ -69,7 +70,7 @@ export const cleanupOldChatMessages = async () => {
       }
     }
     
-    console.log(`Cleanup completed: ${totalDeletedMessages} messages deleted`);
+    console.log(`Manual cleanup completed: ${totalDeletedMessages} messages deleted`);
     return totalDeletedMessages;
   } catch (error) {
     console.error('Error cleaning up old chat messages:', error);
@@ -86,14 +87,14 @@ export const initializeChatCleanupWorker = () => {
   
   // Run once at initialization
   setTimeout(() => {
-    cleanupOldChatMessages()
+    manualCleanupOldChatMessages()
       .then(count => console.log(`Initial cleanup completed: ${count} messages deleted`))
       .catch(err => console.error('Initial cleanup failed:', err));
   }, 10000); // Wait 10 seconds after initialization to start
   
   // Then run periodically 
   setInterval(() => {
-    cleanupOldChatMessages()
+    manualCleanupOldChatMessages()
       .catch(err => console.error('Scheduled cleanup failed:', err));
   }, CLEANUP_INTERVAL);
   
